@@ -21,11 +21,13 @@ jobs:
       - name: Install ESP-IDF dependencies
         run: |
           python -m pip install --user -r requirements.txt
-          
-      # Ensure full cleanup of all CMake cache and intermediate files
-      - name: Full Clean
-        run: idf.py fullclean
       
+      # Delete CMakeCache.txt and the build directory to fully reset the build environment
+      - name: Full Clean - Remove CMake Cache
+        run: |
+          rm -rf build CMakeCache.txt
+          idf.py fullclean
+
       - name: Configure project
         run: idf.py set-target esp32  # Replace 'esp32' with your specific target if different
       
