@@ -1,0 +1,29 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Triggers the workflow on version tags
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up ESP-IDF
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          version: 'latest'
+
+      - name: Build project
+        run: idf.py build
+
+      - name: Upload binary to GitHub Releases
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/*.bin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
