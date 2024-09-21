@@ -7,39 +7,37 @@ on:
 
 jobs:
   build:
-    name: Build ESP-IDF Firmware
-    runs-on: ubuntu-latest
-
-    steps:
-      # Checkout the repository code
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Set up ESP-IDF environment
-      - name: Set up ESP-IDF
-        uses: espressif/esp-idf-ci-action@v1
-        with:
-          version: "latest"
-
-      # Install required Python dependencies for ESP-IDF
-      - name: Install ESP-IDF dependencies
-        run: |
-          python -m pip install --user -r requirements.txt
-
-      # Clean previous builds to avoid CMake cache errors
-      - name: Full Clean
-        run: idf.py fullclean
-
-      # Build the firmware
-      - name: Build firmware
-        run: idf.py build
-
-      # Upload firmware (.bin) as an artifact
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: firmware
-          path: build/your_firmware.bin  # Change this path to your actual .bin file location
+  name: Build ESP-IDF Firmware
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up ESP-IDF
+      uses: espressif/esp-idf-ci-action@v1
+      with:
+        version: "latest"
+    
+    - name: Install ESP-IDF dependencies
+      run: |
+        python -m pip install --user -r requirements.txt
+    
+    - name: Full Clean
+      run: |
+        rm -rf build
+        mkdir build
+    
+    - name: Configure project
+      run: idf.py set-target esp32  # Replace 'esp32' with your specific target if different
+    
+    - name: Build firmware
+      run: idf.py build
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: firmware
+        path: build/toy_state_machine.bin  # This will upload all .bin files in the build directory
 
   release:
     name: Release Firmware
