@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.5)
 
 include($ENV{ADF_PATH}/CMakeLists.txt)
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(toy_state_machine)
+project(toy_with_ble)
 
 # Add optimization flag
 add_compile_options(-Os)
