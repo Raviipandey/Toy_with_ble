@@ -1,70 +1,62 @@
-name: Build and Release Firmware
+name: ESP-IDF Build and Release
 
 on:
   push:
     branches:
-      - main
+      - main  # or your default branch
 
 jobs:
   build:
-    name: Build ESP-IDF Firmware
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up ESP-IDF
-        uses: espressif/esp-idf-ci-action@v1
-        with:
-          version: "latest"
-
-      - name: Install ESP-IDF dependencies
-        run: |
-          python -m pip install --user -r requirements.txt
-
-      - name: Full Clean - Remove CMake Cache
-        run: |
-          rm -rf build CMakeCache.txt
-          idf.py fullclean
-
-      - name: Configure project
-        run: idf.py set-target esp32  # Replace 'esp32' with your specific target if different
-
-      - name: Build firmware
-        run: idf.py build
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: firmware
-          path: build/*.bin  # Upload all .bin files in the build directory
-
-  release:
-    name: Release Firmware
-    needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: firmware
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.sha }}
-          release_name: Firmware Release ${{ github.sha }}
-          draft: false
-          prerelease: false
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
 
-      - name: Upload Binary to Release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/your_firmware.bin  # Change this path to your actual .bin file location
-          asset_name: firmware.bin
-          asset_content_type: application/octet-stream
+    - name: Install ESP-IDF
+      run: |
+        git clone --recursive https://github.com/espressif/esp-idf.git
+        cd esp-idf
+        ./install.sh
+        . ./export.sh
+
+    - name: Install ADF
+      run: |
+        git clone --recursive https://github.com/espressif/esp-adf.git
+        cd esp-adf
+        . ./install.sh
+
+    - name: Build project
+      run: |
+        . $HOME/esp/esp-idf/export.sh
+        idf.py build
+
+    - name: Generate version tag
+      id: version
+      run: echo "::set-output name=version::$(date +'%Y.%m.%d-%H%M%S')"
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        release_name: Release ${{ steps.version.outputs.version }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./build/your-project-name.bin
+        asset_name: your-project-name-${{ steps.version.outputs.version }}.bin
+        asset_content_type: application/octet-stream

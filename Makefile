@@ -1,2 +1,2 @@
-PROJECT_NAME := toy_state_machine
+PROJECT_NAME := toy_with_ble
 include $(ADF_PATH)/project.mk
