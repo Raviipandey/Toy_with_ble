@@ -37,8 +37,18 @@ jobs:
         . $HOME/esp/esp-idf/export.sh
         export ADF_PATH=$HOME/esp/esp-adf
         idf.py build
+      continue-on-error: true
+
+    - name: Display error logs
+      if: failure()
+      run: |
+        echo "===== stderr output ====="
+        cat /home/runner/work/Toy_with_ble/Toy_with_ble/build/log/idf_py_stderr_output_*
+        echo "===== stdout output ====="
+        cat /home/runner/work/Toy_with_ble/Toy_with_ble/build/log/idf_py_stdout_output_*
 
     - name: Create Release
+      if: success()
       id: create_release
       uses: actions/create-release@v1
       env:
@@ -50,6 +60,7 @@ jobs:
         prerelease: false
 
     - name: Upload Release Asset
+      if: success()
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
