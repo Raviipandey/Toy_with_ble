@@ -1,0 +1,13 @@
+# Target labels
+ bootloader
+# Source files and their labels
+C:/Users/ravit/OneDrive/Desktop/Toy_with_ble/build/CMakeFiles/bootloader
+C:/Users/ravit/OneDrive/Desktop/Toy_with_ble/build/CMakeFiles/bootloader.rule
+C:/Users/ravit/OneDrive/Desktop/Toy_with_ble/build/CMakeFiles/bootloader-complete.rule
+C:/Users/ravit/OneDrive/Desktop/Toy_with_ble/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
+C:/Users/ravit/OneDrive/Desktop/Toy_with_ble/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+C:/Users/ravit/OneDrive/Desktop/Toy_with_ble/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+C:/Users/ravit/OneDrive/Desktop/Toy_with_ble/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+C:/Users/ravit/OneDrive/Desktop/Toy_with_ble/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+C:/Users/ravit/OneDrive/Desktop/Toy_with_ble/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+C:/Users/ravit/OneDrive/Desktop/Toy_with_ble/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
