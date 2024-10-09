@@ -1,3 +1,7 @@
+# Define NimBLE_DIR
+set(NIMBLE_DIR "${IDF_PATH}/components/esp-nimble-cpp-master")
+
+# Include NimBLE in idf_component_register
 idf_component_register(SRCS "./src/main.cpp"
                             "./src/led_app.cpp"
                             "./src/iot_qbus_port.cpp"
@@ -11,11 +15,7 @@ idf_component_register(SRCS "./src/main.cpp"
                             "./src/downloader.cpp"
                             "./src/player.cpp"
                             "./src/ble_app.cpp"
-                    INCLUDE_DIRS "./inc")
-
-
-set(PARTITION_CSV_FILE ${CMAKE_CURRENT_LIST_DIR}/partitions.csv)
-
-# Include NimBLE
-set(NIMBLE_DIR "${IDF_PATH}/components/esp-nimble-cpp-master")
-include_directories(${NIMBLE_DIR}/src)
+                            "${NIMBLE_DIR}/src/NimBLEDevice.cpp"
+                            "${NIMBLE_DIR}/src/NimBLEServer.cpp"
+                            # Add other NimBLE source files as needed
+                    INCLUDE_DIRS "./inc" "${NIMBLE_DIR}/src")
