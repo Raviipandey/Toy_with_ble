@@ -3,8 +3,6 @@
 #include <NimBLEServer.h>
 #include <NimBLEService.h>
 
-
-
 extern WiFi *wifi;
 extern BLE *ble;
 extern System *sys;
