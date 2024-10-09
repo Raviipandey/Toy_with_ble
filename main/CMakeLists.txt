@@ -15,3 +15,7 @@ idf_component_register(SRCS "./src/main.cpp"
 
 
 set(PARTITION_CSV_FILE ${CMAKE_CURRENT_LIST_DIR}/partitions.csv)
+
+# Include NimBLE
+set(NIMBLE_DIR "${IDF_PATH}/components/esp-nimble-cpp-master")
+include_directories(${NIMBLE_DIR}/src)
