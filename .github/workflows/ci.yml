@@ -42,6 +42,10 @@ jobs:
           echo "ADF_PATH=$(pwd)/esp-adf" >> $GITHUB_ENV
           echo "IDF_PATH=$(pwd)/esp-idf" >> $GITHUB_ENV
 
+      - name: Clean build directory
+        run: |
+          idf.py fullclean
+
       - name: Build project
         run: |
           . ${{ env.IDF_PATH }}/export.sh
