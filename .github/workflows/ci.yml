@@ -1,37 +1,19 @@
-name: ESP-IDF CI
-
-on:
-  # Trigger the workflow on push or pull request events
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
 jobs:
   build:
-    runs-on: ubuntu-latest  # Use an Ubuntu-based runner for the job
+    runs-on: ubuntu-latest
 
     steps:
-    # Checkout the repository
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Set up ESP-IDF (using the Espressif GitHub Action)
     - name: Set up ESP-IDF
       uses: espressif/esp-idf-ci-action@v1
       with:
-        esp_idf_version: 'v5.2.2'  # Change this to your desired ESP-IDF version
+        esp_idf_version: 'v5.1'
 
-    # Build the project
+    # Clean up previous build artifacts and cache
+    - name: Clean previous build cache
+      run: idf.py fullclean
+
     - name: Build the project
       run: idf.py build
-
-    # Optional: Flash to the device (if you have the necessary setup)
-    # - name: Flash the project
-    #   run: idf.py -p /dev/ttyUSB0 flash
-
-    # Optional: Run unit tests (if you have test cases)
-    # - name: Run tests
-    #   run: idf.py test
