@@ -1,19 +1,30 @@
+name: ESP-IDF CI
+
+on:
+  # Trigger the workflow on push or pull request events
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up ESP-IDF
-      uses: espressif/esp-idf-ci-action@v1
-      with:
-        esp_idf_version: 'v5.1'
+      - name: Set up ESP-IDF
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: "v5.1"
 
-    # Clean up previous build artifacts and cache
-    - name: Clean previous build cache
-      run: idf.py fullclean
+      # Clean up previous build artifacts and cache
+      - name: Clean previous build cache
+        run: idf.py fullclean
 
-    - name: Build the project
-      run: idf.py build
+      - name: Build the project
+        run: idf.py build
