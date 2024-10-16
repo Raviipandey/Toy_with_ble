@@ -1,44 +1,37 @@
-name: ESP-IDF Build
+name: Build ESP32 Firmware
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: ESP-IDF build
-      uses: espressif/esp-idf-ci-action@v1
-      with:
-        esp_idf_version: latest
-        target: esp32
-        path: '.'
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake git
 
-    - name: Install ESP-ADF
-      run: |
-        git clone --recursive https://github.com/espressif/esp-adf.git
-        cd esp-adf
-        ./install.sh
-        . ./export.sh
+      - name: Install ESP-IDF
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: latest
+          target: esp32
 
-    - name: Build project
-      run: |
-        . $IDF_PATH/export.sh
-        . $ADF_PATH/export.sh
-        idf.py build
+      - name: Build firmware
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make
 
-    - name: Store artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: firmware
-        path: build/*.bin
+      - name: Upload firmware to releases
+        uses: actions/upload-artifact@v2
+        with:
+          name: firmware
+          path: build/Toy_with_ble.bin
