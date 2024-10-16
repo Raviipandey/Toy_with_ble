@@ -1,9 +1,8 @@
-name: Build ESP32 Firmware
+name: Build and Release ESP32 Firmware
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [created]
 
 jobs:
   build:
@@ -31,7 +30,8 @@ jobs:
           make
 
       - name: Upload firmware to releases
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-release-asset@v1
         with:
           name: firmware
           path: build/Toy_with_ble.bin
+          release_id: ${{ github.event.release.id }}
