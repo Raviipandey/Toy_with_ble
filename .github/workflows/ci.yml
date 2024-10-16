@@ -22,7 +22,9 @@ jobs:
         with:
           esp_idf_version: "v5.1"
 
-      # Clean up previous build artifacts and cache
+      - name: Add missing audio_sal dependency
+        run: idf.py add-dependency "espressif/audio_sal"
+
       - name: Clean previous build cache
         run: idf.py fullclean
 
