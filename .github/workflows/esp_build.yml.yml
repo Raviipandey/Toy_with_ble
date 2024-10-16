@@ -1,44 +1,30 @@
-name: ESP-IDF Build
+name: ESP-IDF CI
 
 on:
+  # Trigger the workflow on push or pull request events
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: ESP-IDF build
-      uses: espressif/esp-idf-ci-action@v1
-      with:
-        esp_idf_version: latest
-        target: esp32
-        path: '.'
+      - name: Set up ESP-IDF
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: "v5.1"
 
-    - name: Install ESP-ADF
-      run: |
-        git clone --recursive https://github.com/espressif/esp-adf.git
-        cd esp-adf
-        ./install.sh
-        . ./export.sh
+      # Clean up previous build artifacts and cache
+      - name: Clean previous build cache
+        run: idf.py fullclean
 
-    - name: Build project
-      run: |
-        . $IDF_PATH/export.sh
-        . $ADF_PATH/export.sh
-        idf.py build
-
-    - name: Store artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: firmware
-        path: build/*.bin
+      - name: Build the project
+        run: idf.py build
