@@ -1,6 +1,7 @@
-name: CI/CD Pipeline
+name: ESP-IDF CI
 
 on:
+  # Trigger the workflow on push or pull request events
   push:
     branches:
       - main
@@ -10,50 +11,27 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use an Ubuntu-based runner for the job
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    # Checkout the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
+    # Set up ESP-IDF (using the Espressif GitHub Action)
+    - name: Set up ESP-IDF
+      uses: espressif/esp-idf-ci-action@v1
+      with:
+        esp_idf_version: 'v5.2.2'  # Change this to your desired ESP-IDF version
 
-      - name: Install ESP-IDF dependencies
-        run: |
-          sudo apt-get install -y git wget flex bison gperf python3 python3-pip python3-setuptools cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
+    # Build the project
+    - name: Build the project
+      run: idf.py build
 
-      - name: Clone ESP-IDF
-        run: |
-          git clone --recursive https://github.com/espressif/esp-idf.git
-          cd esp-idf
-          ./install.sh
+    # Optional: Flash to the device (if you have the necessary setup)
+    # - name: Flash the project
+    #   run: idf.py -p /dev/ttyUSB0 flash
 
-      - name: Clone ESP-ADF
-        run: |
-          git clone --recursive https://github.com/espressif/esp-adf.git
-          cd esp-adf
-          git submodule update --init --recursive
-
-      - name: Set environment variables
-        run: |
-          echo "ADF_PATH=$(pwd)/esp-adf" >> $GITHUB_ENV
-          echo "IDF_PATH=$(pwd)/esp-idf" >> $GITHUB_ENV
-
-      - name: Clean build directory
-        run: |
-          idf.py fullclean
-
-      - name: Build project
-        run: |
-          . ${{ env.IDF_PATH }}/export.sh
-          idf.py build
-
-      - name: Upload binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: firmware
-          path: build/*.bin
-          retention-days: 1
+    # Optional: Run unit tests (if you have test cases)
+    # - name: Run tests
+    #   run: idf.py test
