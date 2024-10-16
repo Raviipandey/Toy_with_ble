@@ -19,22 +19,44 @@ jobs:
       # Clone ADF repository
       - name: Clone Espressif ADF
         run: |
+          mkdir -p $HOME/esp
           git clone --recursive https://github.com/espressif/esp-adf.git $HOME/esp/esp-adf
 
+      # Install ESP-IDF
       - name: Set up ESP-IDF
         uses: espressif/esp-idf-ci-action@v1
         with:
           esp_idf_version: "v5.2.2"
 
-      # Set up ADF environment (this includes setting up ESP-IDF automatically)
+      # Set environment variables
+      - name: Set environment variables
+        run: |
+          echo "ADF_PATH=$HOME/esp/esp-adf" >> $GITHUB_ENV
+          echo "IDF_PATH=/opt/esp/idf" >> $GITHUB_ENV
+
+      # Install ADF dependencies
+      - name: Install ADF dependencies
+        run: |
+          . $IDF_PATH/export.sh
+          cd $ADF_PATH
+          ./install.sh
+
+      # Set up ADF environment
       - name: Set up ADF environment
         run: |
-          source $HOME/esp/esp-adf/export.sh
+          . $IDF_PATH/export.sh
+          . $ADF_PATH/export.sh
 
       # Clean up previous build artifacts and cache
       - name: Clean previous build cache
-        run: idf.py fullclean
+        run: |
+          . $IDF_PATH/export.sh
+          . $ADF_PATH/export.sh
+          idf.py fullclean
 
       # Build the project
       - name: Build the project
-        run: idf.py build
+        run: |
+          . $IDF_PATH/export.sh
+          . $ADF_PATH/export.sh
+          idf.py build
