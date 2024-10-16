@@ -1,5 +1,4 @@
-# Define NimBLE_DIR
-set(NIMBLE_DIR "${IDF_PATH}/components/esp-nimble-cpp-master")
+
 
 # Include NimBLE in idf_component_register
 idf_component_register(SRCS "./src/main.cpp"
@@ -18,4 +17,4 @@ idf_component_register(SRCS "./src/main.cpp"
                             "${NIMBLE_DIR}/src/NimBLEDevice.cpp"
                             "${NIMBLE_DIR}/src/NimBLEServer.cpp"
                             # Add other NimBLE source files as needed
-                    INCLUDE_DIRS "./inc" "${NIMBLE_DIR}/src")
+                    INCLUDE_DIRS "./inc")
