@@ -1,0 +1,44 @@
+name: ESP-IDF Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+
+    - name: ESP-IDF build
+      uses: espressif/esp-idf-ci-action@v1
+      with:
+        esp_idf_version: latest
+        target: esp32
+        path: '.'
+
+    - name: Install ESP-ADF
+      run: |
+        git clone --recursive https://github.com/espressif/esp-adf.git
+        cd esp-adf
+        ./install.sh
+        . ./export.sh
+
+    - name: Build project
+      run: |
+        . $IDF_PATH/export.sh
+        . $ADF_PATH/export.sh
+        idf.py build
+
+    - name: Store artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: firmware
+        path: build/*.bin
