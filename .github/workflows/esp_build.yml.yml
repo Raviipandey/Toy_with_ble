@@ -16,47 +16,52 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Clone ADF repository
+      # Clone ADF repository with specific version
       - name: Clone Espressif ADF
         run: |
           mkdir -p $HOME/esp
-          git clone --recursive https://github.com/espressif/esp-adf.git $HOME/esp/esp-adf
+          cd $HOME/esp
+          git clone --recursive https://github.com/espressif/esp-adf.git
+          cd esp-adf
+          # Checkout a specific version that's compatible with ESP-IDF v5.2.2
+          git checkout master  # or specific tag that works with IDF 5.2.2
 
-      # Install ESP-IDF
+      # Set up ESP-IDF
       - name: Set up ESP-IDF
         uses: espressif/esp-idf-ci-action@v1
         with:
           esp_idf_version: "v5.2.2"
+          target: esp32
 
       # Set environment variables
       - name: Set environment variables
         run: |
           echo "ADF_PATH=$HOME/esp/esp-adf" >> $GITHUB_ENV
           echo "IDF_PATH=/opt/esp/idf" >> $GITHUB_ENV
+          export ADF_PATH=$HOME/esp/esp-adf
+          export IDF_PATH=/opt/esp/idf
 
       # Install ADF dependencies
       - name: Install ADF dependencies
         run: |
           . $IDF_PATH/export.sh
-          cd $ADF_PATH
+          cd $HOME/esp/esp-adf
           ./install.sh
-
-      # Set up ADF environment
-      - name: Set up ADF environment
-        run: |
-          . $IDF_PATH/export.sh
-          . $ADF_PATH/export.sh
-
-      # Clean up previous build artifacts and cache
-      - name: Clean previous build cache
-        run: |
-          . $IDF_PATH/export.sh
-          . $ADF_PATH/export.sh
-          idf.py fullclean
 
       # Build the project
       - name: Build the project
         run: |
           . $IDF_PATH/export.sh
-          . $ADF_PATH/export.sh
+          . $HOME/esp/esp-adf/export.sh
+          export ADF_PATH=$HOME/esp/esp-adf
+          export IDF_PATH=/opt/esp/idf
+          idf.py set-target esp32
+          idf.py reconfigure
           idf.py build
+
+      # Optional: Upload artifacts
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: esp-build
+          path: build/toy_with_ble.bin
