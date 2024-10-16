@@ -18,3 +18,4 @@ idf_component_register(SRCS "./src/main.cpp"
                             "${NIMBLE_DIR}/src/NimBLEServer.cpp"
                             # Add other NimBLE source files as needed
                     INCLUDE_DIRS "./inc")
+                    
