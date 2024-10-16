@@ -58,10 +58,3 @@ jobs:
           idf.py set-target esp32
           idf.py reconfigure
           idf.py build
-
-      # Optional: Upload artifacts
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: esp-build
-          path: build/toy_with_ble.bin
