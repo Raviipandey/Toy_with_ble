@@ -1,7 +1,6 @@
-name: ESP-IDF CI
+name: ESP-IDF + ADF CI
 
 on:
-  # Trigger the workflow on push or pull request events
   push:
     branches:
       - main
@@ -17,14 +16,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Clone ADF repository
+      - name: Clone Espressif ADF
+        run: |
+          git clone --recursive https://github.com/espressif/esp-adf.git $HOME/esp/esp-adf
+
       - name: Set up ESP-IDF
         uses: espressif/esp-idf-ci-action@v1
         with:
           esp_idf_version: "v5.2.2"
 
+      # Set up ADF environment (this includes setting up ESP-IDF automatically)
+      - name: Set up ADF environment
+        run: |
+          source $HOME/esp/esp-adf/export.sh
+
       # Clean up previous build artifacts and cache
       - name: Clean previous build cache
         run: idf.py fullclean
 
+      # Build the project
       - name: Build the project
         run: idf.py build
